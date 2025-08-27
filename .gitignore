@@ -1,2 +1,13 @@
 # created by virtualenv automatically
+# Sanal ortam
+venv/
+.env
+
+# Python cache dosyaları
+__pycache__/
+*.pyc
+
+# IDE dosyaları
+.idea/
+*.iml
 
