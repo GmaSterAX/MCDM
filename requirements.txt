@@ -1,0 +1,8 @@
+flask
+numpy
+pandas
+io
+base64
+scipy
+matplotlib
+typing

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Results</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="container">
+    <h1>{{ method }} Results</h1>
+
+    <h2>Criteria:</h2>
+    <ul>
+        {% for crit in criteria %}
+        <li>{{ crit }}</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Alternatives:</h2>
+    <ul>
+        {% for alt in alternatives %}
+        <li>{{ alt }}</li>
+        {% endfor %}
+    </ul>
+
+    {% if results.get('weights') %}
+    <h2>Criteria Weigths:</h2>
+    <pre>{{ results['weights'] }}</pre>
+    {% if graph_weights %}
+    <img src="data:image/png;base64,{{ graph_weights }}" alt="Criteria Weigth Graph" class="graph">
+    {% endif %}
+    {% endif %}
+
+    {% if results.get('scores') %}
+    <h2>Alternatives Scores:</h2>
+    <pre>{{ results['scores'] }}</pre>
+    {% endif %}
+
+    {% if results.get('closeness_coefficients') %}
+    <h2>Closeness Coefficient:</h2>
+    <pre>{{ results['closeness_coefficients'] }}</pre>
+    {% endif %}
+
+    {% if results.get('q_values') %}
+    <h2>Q Values:</h2>
+    <pre>{{ results['q_values'] }}</pre>
+    {% endif %}
+
+    {% if graph_scores %}
+    <img src="data:image/png;base64,{{ graph_scores }}" alt="Alternative Scores Graph" class="graph">
+    {% endif %}
+
+    {% if results.get('ranking') %}
+    <h2>Ranking:</h2>
+    <ol>
+        {% for r in results['ranking'] %}
+        <li>{{ r }}</li>
+        {% endfor %}
+    </ol>
+    {% endif %}
+
+    <br>
+    <a href="{{ url_for('index') }}" class="button">Back</a>
+</div>
+</body>
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>MCDM Uygulaması</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script>
+        function generateInputs() {
+            const altCount = parseInt(document.getElementById('altCount').value);
+            const critCount = parseInt(document.getElementById('critCount').value);
+
+            // Alternatif isim alanları
+            const altContainer = document.getElementById('alternatives');
+            altContainer.innerHTML = '<h3>Name of Alternatives (optional)</h3>';
+            for (let i = 0; i < altCount; i++) {
+                altContainer.innerHTML += `<input type="text" name="alternatives" placeholder="Alternative ${i+1} (optional)"><br>`;
+            }
+
+            // Kriter isimleri + tip seçimleri
+            const critContainer = document.getElementById('criteria');
+            critContainer.innerHTML = '<h3>Name and Type of Criteria</h3>';
+            for (let i = 0; i < critCount; i++) {
+                critContainer.innerHTML += `
+                    <div style="margin-bottom:8px">
+                        <input type="text" name="criteria" placeholder="Criterion ${i+1} (optional)">
+                        <select name="criteria_type" required>
+                            <option value="benefit">Max</option>
+                            <option value="cost">Min</option>
+                        </select>
+                    </div>
+                `;
+            }
+
+            // Karar matrisi
+            const matrixContainer = document.getElementById('decisionMatrix');
+            matrixContainer.innerHTML = '<h3>Decision Matrix</h3>';
+            let table = '<table class="matrix-table"><thead><tr><th></th>';
+            for (let j = 0; j < critCount; j++) {
+                table += `<th>C${j+1}</th>`;
+            }
+            table += '</tr></thead><tbody>';
+
+            for (let i = 0; i < altCount; i++) {
+                table += `<tr><th>A${i+1}</th>`;
+                for (let j = 0; j < critCount; j++) {
+                    table += `<td><input type="number" step="0.01" name="matrix_${i}_${j}" required></td>`;
+                }
+                table += '</tr>';
+            }
+            table += '</tbody></table>';
+            matrixContainer.innerHTML += table;
+        }
+    </script>
+
+    <style>
+        .matrix-table {
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        .matrix-table th, .matrix-table td {
+            border: 1px solid #ccc;
+            padding: 5px;
+            text-align: center;
+        }
+        .matrix-table input {
+            width: 60px;
+            padding: 3px;
+            text-align: center;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>MCDM Calculator</h1>
+    <form action="{{ url_for('calculate') }}" method="post">
+        <label>Number of Alternatives:</label>
+        <input type="number" id="altCount" name="altCount" min="2" max="20" required><br>
+
+        <label>Number of Criteria:</label>
+        <input type="number" id="critCount" name="critCount" min="2" max="20" required><br>
+
+        <button type="button" onclick="generateInputs()">Create</button><br><br>
+
+        <div id="alternatives"></div>
+        <div id="criteria"></div>
+        <div id="decisionMatrix"></div>
+
+        <label>Select Method:</label>
+        <select name="method" required>
+            <option value="AHP">AHP</option>
+            <option value="SAW">SAW</option>
+            <option value="Entropy">Entropy</option>
+            <option value="TOPSIS">TOPSIS</option>
+            <option value="VIKOR">VIKOR</option>
+        </select><br><br>
+
+        <button type="submit">Calculate</button>
+    </form>
+</div>
+</body>
+</html>
