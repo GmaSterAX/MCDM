@@ -21,7 +21,6 @@ class AHP:
 
     def _calculate_weights(self):
         """Weight Calculation using Eigenvalue Method"""
-        # Eğer pairwise matrix birim matris ise, entropy method kullan
         if np.allclose(self.pairwise_matrix, np.ones_like(self.pairwise_matrix)):
             return self._calculate_weights_entropy()
 
@@ -29,7 +28,6 @@ class AHP:
         max_eigenvalue_index = np.argmax(eigenvalues.real)
         principal_eigenvector = eigenvectors[:, max_eigenvalue_index].real
 
-        # Negatif değerleri pozitif yap
         if np.sum(principal_eigenvector) < 0:
             principal_eigenvector = -principal_eigenvector
 
@@ -38,16 +36,16 @@ class AHP:
 
     def _calculate_weights_entropy(self):
         """Entropy-based weight calculation when pairwise matrix is not available"""
-        # Decision matrix'i normalize et
+        # Normalize decision matrix
         normalized_matrix = self.decision_matrix.copy()
 
-        # Her kriter için normalizasyon
+        #Normalizzation for each criterion
         for j in range(normalized_matrix.shape[1]):
             column_sum = np.sum(normalized_matrix[:, j])
             if column_sum > 0:
                 normalized_matrix[:, j] = normalized_matrix[:, j] / column_sum
 
-        # Entropy hesapla
+        # Entropy 
         m, n = normalized_matrix.shape
         entropy = np.zeros(n)
 
@@ -76,7 +74,7 @@ class AHP:
         try:
             # Lambda max
             weighted_sum = np.dot(self.pairwise_matrix, self.weights)
-            lambda_max = np.mean(weighted_sum / (self.weights + 1e-10))  # Divide by zero koruması
+            lambda_max = np.mean(weighted_sum / (self.weights + 1e-10))  
 
             # CI (Consistency Index)
             ci = (lambda_max - n) / (n - 1)
@@ -97,21 +95,17 @@ class AHP:
             column = self.decision_matrix[:, j]
 
             if criterion_type in ['benefit', 'max']:
-                # Benefit criteria - büyük değer iyi
                 max_val = np.max(column)
                 normalized[:, j] = column / max_val if max_val != 0 else np.zeros_like(column)
             elif criterion_type in ['cost', 'min']:
-                # Cost criteria - küçük değer iyi
                 min_val = np.min(column)
                 if min_val == 0:
-                    # Eğer minimum 0 ise, inverse transformation kullan
                     max_val = np.max(column)
                     normalized[:, j] = (max_val - column) / max_val if max_val != 0 else np.zeros_like(column)
                 else:
                     # Normal inverse transformation
                     normalized[:, j] = min_val / column
             else:
-                # Default olarak benefit kabul et
                 max_val = np.max(column)
                 normalized[:, j] = column / max_val if max_val != 0 else np.zeros_like(column)
 
@@ -119,9 +113,7 @@ class AHP:
 
     def _calculate_scores(self):
         """AHP Score Calculation"""
-        # Ağırlıklı normalize matris
         weighted_matrix = self.normalized_matrix * self.weights.reshape(1, -1)
-        # Her alternatif için toplam skor
         scores = np.sum(weighted_matrix, axis=1)
         return scores
 
